@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi Guys!</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="left">
+            <img class="circle" src="/<?= htmlspecialchars($user['profile_photo_path']) ?>"
+                alt="Profil Fotoğrafı" />
+            <div class="username">
+                <?= htmlspecialchars($user['username']) ?>
+            </div>
+        </div>
+        <div class="buttons">
+            <button class="match-btn" onclick="window.location.href='/matches';">Eşleşmeler</button>
+            <button class="request-btn" onclick="window.location.href='/match-requests';">Eşleşme İstekleri</button>
+            <div class="settings-area">
+                <button class="settings-btn" id="settings">
+                    <span class="user">
+                        <img class="circle" src="/<?= htmlspecialchars($user['profile_photo_path']) ?>"
+                            alt="Profil Fotoğrafı" />
+                        <span class="user-info">
+                            <span class="username">
+                                <?= htmlspecialchars($user['username']) ?>
+                            </span>
+                            <span class="subtext">Ayarlar</span>
+                        </span>
+                    </span>
+                    <span class="icon"><i class="fa-solid fa-angle-down"></i></span>
+                </button>
+
+                <div class="settings-menu">
+                    <span>Ayarlar</span>
+
+                    <a href="/profile">Profil</a>
+                    <a href="/games-info">Oyun Tercihleri</a>
+                    <span>Çıkış</span>
+                    <a href="/logout" class="logout">Çıkış Yap</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php if ($nextUser): ?>
+    <div class="main">
+
+        <form method="POST" class="arrow" action="">
+            <input type="hidden" name="nav" value="prev">
+            <button type="submit">
+                <i class="fa-solid fa-angle-left"></i>
+            </button>
+        </form>
+
+
+        <div class="card">
+            <div class="card-header">
+                <div class="report">
+                    <button class="report-btn" id="report-btn"><i class="fa-solid fa-flag"></i> Bildir</button>
+                </div>
+                <div class="profile-pic">
+                    <img src="/<?= htmlspecialchars($nextUser['profile_photo_path']) ?>" alt="Profil Fotoğrafı"
+                        width="100">
+                </div>
+                <div class="username">
+                    <?= htmlspecialchars($nextUser['username']) ?>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <section class="about-section">
+                    <h3>Hakkında</h3>
+                    <p>
+                        <?= nl2br(htmlspecialchars($nextUser['about'])) ?>
+                    </p>
+                    <p><strong>Yaş:</strong>
+                        <?php
+                            $birth = new DateTime($nextUser['birthday']);
+                            $now = new DateTime();
+                            echo $now->diff($birth)->y;
+                            ?>
+                    </p>
+                    <p><strong>Cinsiyet:</strong>
+                        <?= htmlspecialchars($genderLabels[$nextUser['gender']] ?? $user['gender']) ?>
+                    </p>
+                </section>
+
+                <section class="games-section">
+                    <h3>Oyun Bilgileri</h3>
+                    <ul>
+                        <?php if (!empty($nextUser['valo_rank'])): ?>
+                        <li><strong>Valorant:</strong>
+                            <?= htmlspecialchars($nextUser['valo_rank']) ?>
+                        </li>
+                        <?php endif; ?>
+                        <?php if (!empty($nextUser['lol_rank'])): ?>
+                        <li><strong>League of Legends:</strong>
+                            <?= htmlspecialchars($nextUser['lol_rank']) ?>
+                        </li>
+                        <?php endif; ?>
+                        <?php if (!empty($nextUser['cs2_rank'])): ?>
+                        <li><strong>Counter-Strike 2 :</strong>
+                            <?= htmlspecialchars($nextUser['cs2_rank']) ?>
+                        </li>
+                        <?php endif; ?>
+                        <?php if (!empty($nextUser['gta_level'])): ?>
+                        <li><strong>GTA Level:</strong>
+                            <?= htmlspecialchars($nextUser['gta_level']) ?>
+                        </li>
+                        <?php endif; ?>
+                        <?php if (
+                                empty($nextUser['valo_rank']) &&
+                                empty($nextUser['lol_rank']) &&
+                                empty($nextUser['cs2_rank']) &&
+                                empty($nextUser['gta_level'])
+                            ): ?>
+                        <li><em>Henüz oyun bilgisi belirtilmemiş.</em></li>
+                        <?php endif; ?>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="card-footer">
+                <form action="" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    <input type="hidden" name="target_user_id" value="<?= $nextUser['id'] ?>">
+                    <button type="submit" class="send-btn" name="action" value="match">Eşleşme İsteği Gönder</button>
+                    <button type="submit" class="skip-btn" name="action" value="skip">Ghostla</button>
+                </form>
+            </div>
+        </div>
+
+
+
+        <form method="POST" class="arrow" action="">
+            <input type="hidden" name="nav" value="next">
+            <button type="submit">
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+        </form>
+
+    </div>
+
+    <div class="main">
+        <form method="POST" class="arrow" action="">
+            <input type="hidden" name="nav" value="prev">
+            <button type="submit">
+                <i class="fa-solid fa-angle-left"></i>
+            </button>
+        </form>
+
+
+        <div class="ads-card">
+            <div class="ads-card-header">
+                <div class="report">
+                     <i class="fa-solid fa-rectangle-ad"></i>
+                </div>
+            </div>
+
+            <div class="ads-card-body">
+               <div class="ads-img">
+                 <img src="/assets/img/Hi Guys!.png" alt="">
+               </div>
+                <h1>Reklam Başlığı</h1>
+                <p>İçeriği</p>
+            </div>
+
+            <div class="ads-card-footer">
+                <a href=""  class="send-btn">Göz At</a>
+            </div>
+        </div>
+
+        <form method="POST" class="arrow" action="">
+            <input type="hidden" name="nav" value="next">
+            <button type="submit">
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+        </form>
+    </div>
+
+
+
+    <?php else: ?>
+    <div class="main">
+
+
+        <div class="card">
+            <p>Gösterilecek kullanıcı kalmadı.</p>
+        </div>
+
+
+    </div>
+
+    <?php endif; ?>
+
+    <div class="notification" id="notificationBox">
+        <div class="header">
+            <div class="name"><i class="fa-solid fa-bell"></i> Bildirim</div>
+            <div class="close-area" onclick="closeNotification()"><span><i class="fa-solid fa-xmark"></i></span></div>
+        </div>
+        <div class="body" id="notificationMessage">
+            <!-- JS ile doldurulacak -->
+        </div>
+    </div>
+
+    <div class="report-modal-area" id="report-modal">
+        <div class="report-modal">
+            <div class="header">
+                <h1>Kullanıcı Bildirme</h1>
+                <span class="close-btn"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <div class="body">
+                <form action="" class="inputs">
+                    <div class="input">
+                        <input type="hidden" name="user_id">
+                        <label for="">Kullanıcı Adı</label>
+                        <input type="text">
+                    </div>
+                    <div class="input">
+                        <label for="">Nedeni</label>
+                        <select name="reports" id="">
+                            <option value="">Lütfen bir seçenek belirleyin</option>
+                            <option value="Saygısızlık">Profilde uygunsuz veya saygısız ifadeler var</option>
+                            <option value="Yaş Sınırı">Kullanıcının yaşı 13’ten küçük</option>
+                            <option value="Kişisel Veriler">Kullanıcı kişisel verilerini (adres, telefon vb.) paylaşmış
+                            </option>
+                            <option value="Spam veya Reklam">Hesap spam ya da reklam içeriyor</option>
+                            <option value="Uygunsuz İçerik">Profilde uygunsuz içerik bulunuyor</option>
+                            <option value="Zorbalık">Profilde zorbalık veya tehdit edici ifadeler var</option>
+                            <option value="Hoşlanılmayan Kullanıcı">Bu kullanıcıdan hoşlanmadım.</option>
+                        </select>
+                    </div>
+                    <div class="input">
+                        <label for="">Eklemek İstediğin Birşey var mı ?</label>
+                        <textarea name="msg" id=""></textarea>
+                    </div>
+                    <div class="input">
+                        <button>Kullanıcıyı Bildir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            <? php if (isset($_SESSION['notification'])): ?>
+                const msg = <?= json_encode($_SESSION['notification']['message']); ?>;
+            const type = <?= json_encode($_SESSION['notification']['type']); ?>;
+
+            const box = document.getElementById('notificationBox');
+            const body = document.getElementById('notificationMessage');
+
+            if (box && body) {
+                body.textContent = msg;
+                box.classList.add(type); // ✅ bildirime class ekliyoruz (örnek: "success", "info")
+                box.style.display = 'block';
+
+                setTimeout(() => {
+                    closeNotification();
+                }, 5000);
+            }
+                <? php unset($_SESSION['notification']); endif; ?>
+        });
+
+        function closeNotification() {
+            const n = document.getElementById('notificationBox');
+            if (n) n.style.display = 'none';
+        }
+    </script>
+    <script src="/assets/js/script.js"></script>
+
+</body>
+
+</html>

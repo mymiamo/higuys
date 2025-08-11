@@ -1,0 +1,66 @@
+Options -MultiViews
+RewriteEngine On
+
+RewriteEngine On
+
+# ─── 1) .php ile gelen her isteği uzantısız hâline 301 ile zorunlu yönlendir ───
+# Örnek:  GET /foo.php?x=1  → 301 → /foo?x=1
+RewriteCond %{THE_REQUEST} \s/([^?\s]+)\.php [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+# ─── 2) Statik dosya veya gerçek klasörse dokunma ───
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ─── 3) forgot-password token kuralın ───
+# /forgot-password/XYZ → forgot-password.php?token=XYZ
+RewriteRule ^forgot-password/([A-Za-z0-9\-]+)/?$ forgot-password.php?token=$1 [L,QSA]
+
+# ─── 4) Uzantısız URL’leri .php veya .html’e dahili yönlendir ───
+# /foo → foo.php   (eğer foo.php varsa)
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^\./]+)/?$ $1.php [L,QSA]
+
+# /bar → bar.html (eğer bar.html varsa)
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^([^\./]+)/?$ $1.html [L,QSA]
+
+DirectoryIndex ana-sayfa.html ana-sayfa.php app.php
+
+# BEGIN cPanel-generated php ini directives, do not edit
+<IfModule php8_module>
+   php_flag display_errors On
+   php_value max_execution_time 3600
+   php_value max_input_time 3600
+   php_value max_input_vars 1000
+   php_value memory_limit 256M
+   php_value post_max_size 256M
+   php_value session.gc_maxlifetime 1440
+   php_value session.save_path "/var/cpanel/php/sessions/ea-php81"
+   php_value upload_max_filesize 8000M
+   php_flag zlib.output_compression Off
+</IfModule>
+<IfModule lsapi_module>
+   php_flag display_errors On
+   php_value max_execution_time 3600
+   php_value max_input_time 3600
+   php_value max_input_vars 1000
+   php_value memory_limit 256M
+   php_value post_max_size 256M
+   php_value session.gc_maxlifetime 1440
+   php_value session.save_path "/var/cpanel/php/sessions/ea-php81"
+   php_value upload_max_filesize 8000M
+   php_flag zlib.output_compression Off
+</IfModule>
+# END cPanel-generated php ini directives, do not edit
+
+<Files "delete_skips.php">
+  Order Allow,Deny
+  Deny from all
+</Files>
+
+<Files "config.php">
+  Order Allow,Deny
+  Deny from all
+</Files>
